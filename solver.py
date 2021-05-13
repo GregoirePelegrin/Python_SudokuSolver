@@ -3,6 +3,37 @@ groups = []
 pool = []
 possibilities = []
 
+def display():
+    soluce = ""
+    size = int(len(pool) ** 0.5)
+    for i,line in enumerate(data):
+        if i != 0 and i % size == 0: soluce += "=======================\n"
+        for j,cell in enumerate(line):
+            if j != 0 and j % size == 0: soluce += "|| "
+            soluce += "{}".format(cell)
+            if j != len(line)-1: soluce += " "
+        if i != len(data)-1: soluce += "\n"
+    print(soluce)
+def displayPossibilities():
+    poss = ""
+    size = int(len(pool) ** 0.5)
+    for i,line in enumerate(possibilities):
+        if i != 0 and i % size == 0: poss += "==========================================================================================================================\n"
+        for j,cell in enumerate(line):
+            if j != 0 and j % size == 0: poss += "|| "
+            if type(cell) == int:
+                for k in range(int(len(pool)/2)): poss += " "
+                poss += "{}(i)".format(cell)
+                for k in range(int(len(pool)/2)): poss += " "
+            else: 
+                for k in range(int((len(pool)-len(cell))/2)): poss += " "
+                for c in cell: poss += "{}".format(c)
+                poss += "(l)"
+                if len(cell) % 2 == 0: poss += " "
+                for k in range(int((len(pool)-len(cell))/2)): poss += " "
+            poss += " "
+        if i != len(possibilities)-1: poss += "\n"
+    print(poss)
 def fillPossibilities():
     for line in data:
         temp = []
@@ -52,14 +83,17 @@ def solve():
     while not solved:
         updatePossibilities()
         updateData()
-        print("Current data: {}".format(data))
+        # print("Current possibilities:")
+        # displayPossibilities()
+        # print("Current data:")
+        # display()
         solved = True
         for line in data:
             if 0 in line:
                 solved = False
                 break
-        if input("Continue? (y/n) ") == "n":
-            break
+        # if input("Continue? (y/n) ") == "n":
+        #     break
 def updateData():
     for i in range(len(pool)):
         for j in range(len(pool)):
@@ -90,6 +124,18 @@ def verifGroup(g):
                             possibilities[g[j][0]][g[j][1]].remove(c)
                         except:
                             pass
+        for c in content:
+            alone = True
+            for j in range(len(g)):
+                if i != j and type(possibilities[g[j][0]][g[j][1]]) != int and c in possibilities[g[j][0]][g[j][1]]:
+                    alone = False
+                    break
+                if type(possibilities[g[j][0]][g[j][1]]) == int and c == possibilities[g[j][0]][g[j][1]]:
+                    alone = False
+                    break 
+            if alone:
+                possibilities[g[i][0]][g[i][1]] = [c]
+                break
 
 getInitialState("data.txt")
 poolGeneration()
@@ -98,14 +144,4 @@ groupGeneration()
 fillPossibilities()
 
 solve()
-
-soluce = ""
-size = int(len(pool) ** 0.5)
-for i,line in enumerate(data):
-    if i != 0 and i % size == 0: soluce += "=======================\n"
-    for j,cell in enumerate(line):
-        if j != 0 and j % size == 0: soluce += "|| "
-        soluce += "{}".format(cell)
-        if j != len(line)-1: soluce += " "
-    if i != len(data)-1: soluce += "\n"
-print(soluce)
+display()
