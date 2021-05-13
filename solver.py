@@ -47,15 +47,13 @@ def getInitialState(filename):
     with open(filename, "r") as f:
         content = f.read()
     content = content.split("\n")
-    for i in range(len(content)):
-        content[i] = content[i].split(" ")
     for line in content:
         temp = []
         for cell in line:
-            if cell == 'x':
-                temp.append(0)
-            else:
+            try:
                 temp.append(int(cell))
+            except:
+                temp.append(0)
         data.append(temp)
 def groupGeneration():
     groups.clear()
@@ -137,7 +135,7 @@ def verifGroup(g):
                 possibilities[g[i][0]][g[i][1]] = [c]
                 break
 
-getInitialState("data.txt")
+getInitialState("data2.txt")
 poolGeneration()
 groupGeneration()
 

@@ -1,9 +1,9 @@
-5 1 x x x x x x x
-x x x 5 x x 4 x x
-x x x 1 8 2 x x x
-x 5 3 x x x x 1 8
-x x x 9 x 6 x x x
-1 6 x x x x 2 4 x
-x x x 3 6 4 x x x
-x x 2 x x 1 x x x
-x x x x x x x 9 3
+xxxx18x4x
+2xx6xxx53
+7xxxxxx8x
+1xx2x3xxx
+xx5xxx9xx
+xxx9x4xx2
+x4xxxxxx8
+31xxx7xx4
+x5x46xxxx
