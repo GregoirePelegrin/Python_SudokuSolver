@@ -1,3 +1,5 @@
+import MaskLib
+
 data = []
 groups = []
 pool = []
@@ -7,7 +9,10 @@ def display():
     soluce = ""
     size = int(len(pool) ** 0.5)
     for i,line in enumerate(data):
-        if i != 0 and i % size == 0: soluce += "=======================\n"
+        if i != 0 and i % size == 0: 
+            for j in range(len(pool)*2 + 3*(size-1) - 1):
+                soluce += "="
+            soluce += "\n"
         for j,cell in enumerate(line):
             if j != 0 and j % size == 0: soluce += "|| "
             soluce += "{}".format(cell)
@@ -18,7 +23,10 @@ def displayPossibilities():
     poss = ""
     size = int(len(pool) ** 0.5)
     for i,line in enumerate(possibilities):
-        if i != 0 and i % size == 0: poss += "==========================================================================================================================\n"
+        if i != 0 and i % size == 0: 
+            for j in range(len(pool)*(len(pool)+4) + 3*(size-1) - 1):
+                poss += "="
+            poss += "\n"
         for j,cell in enumerate(line):
             if j != 0 and j % size == 0: poss += "|| "
             if type(cell) == int:
@@ -81,17 +89,11 @@ def solve():
     while not solved:
         updatePossibilities()
         updateData()
-        # print("Current possibilities:")
-        # displayPossibilities()
-        # print("Current data:")
-        # display()
         solved = True
         for line in data:
             if 0 in line:
                 solved = False
                 break
-        # if input("Continue? (y/n) ") == "n":
-        #     break
 def updateData():
     for i in range(len(pool)):
         for j in range(len(pool)):
@@ -99,43 +101,32 @@ def updateData():
                 data[i][j] = possibilities[i][j][0]
 def updatePossibilities():
     for group in groups:
-        verifGroup(group)
-def verifGroup(g):
-    for i in range(len(g)):
-        content = possibilities[g[i][0]][g[i][1]]
-        if type(content) == int:
-            for j in range(len(g)):
-                try:
-                    possibilities[g[j][0]][g[j][1]].remove(content)
-                except:
-                    pass
+        mask = MaskLib.Mask(_s=len(pool))
+        while not mask.maxed:
+            mask.increment()
+            isComplete, possExposed = verifExposed(mask, group)
+            if isComplete:
+                for bit,g in zip(mask.value, group):
+                    if bit == "0":
+                        for poss in possExposed:
+                            try:
+                                possibilities[g[0]][g[1]].remove(poss)
+                            except:
+                                pass
+def verifExposed(mask, g):
+    temp = []
+    for i,bit in enumerate(mask.value):
+        if bit == "1": temp.append(possibilities[g[i][0]][g[i][1]])
+    possSet = []
+    for cell in temp:
+        if type(cell) == int:
+            if cell not in possSet: possSet.append(cell)
             continue
-        count = 1
-        for j in range(len(g)):
-            if i != j and content == possibilities[g[j][0]][g[j][1]]: 
-                count += 1
-        if len(content) == count:
-            for j in range(len(g)):
-                if content != possibilities[g[j][0]][g[j][1]]:
-                    for c in content:
-                        try:
-                            possibilities[g[j][0]][g[j][1]].remove(c)
-                        except:
-                            pass
-        for c in content:
-            alone = True
-            for j in range(len(g)):
-                if i != j and type(possibilities[g[j][0]][g[j][1]]) != int and c in possibilities[g[j][0]][g[j][1]]:
-                    alone = False
-                    break
-                if type(possibilities[g[j][0]][g[j][1]]) == int and c == possibilities[g[j][0]][g[j][1]]:
-                    alone = False
-                    break 
-            if alone:
-                possibilities[g[i][0]][g[i][1]] = [c]
-                break
+        for poss in cell:
+            if poss not in possSet: possSet.append(poss)
+    return (len(possSet) == mask.exposed, possSet)
 
-getInitialState("data2.txt")
+getInitialState("data.txt")
 poolGeneration()
 groupGeneration()
 
